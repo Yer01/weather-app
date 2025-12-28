@@ -30,7 +30,8 @@ func main() {
 	apikey := os.Getenv("API_KEY")
 
 	wd := &models.WeatherData{
-		APIKey: apikey,
+		APIKey:      apikey,
+		RedisClient: rClient,
 	}
 
 	app := &application{
