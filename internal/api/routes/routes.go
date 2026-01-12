@@ -22,7 +22,7 @@ func Routes(key string) *chi.Mux {
 
 	mux.Use(middleware.Logger)
 
-	mux.Use(httprate.Limit(1, 10*time.Second, httprate.WithKeyFuncs(httprate.KeyByIP, httprate.KeyByEndpoint)))
+	mux.Use(httprate.Limit(100, 10*time.Second, httprate.WithKeyFuncs(httprate.KeyByIP, httprate.KeyByEndpoint)))
 
 	mux.Get("/report/{country}/{city}", weatherHandler.GetToday)
 

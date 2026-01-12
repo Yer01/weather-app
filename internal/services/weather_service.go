@@ -1,14 +1,17 @@
 package services
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/Yer01/weather-app/internal/cache"
 	"github.com/Yer01/weather-app/internal/models"
+	"github.com/redis/go-redis/v9"
 )
 
 type Service interface {
@@ -33,6 +36,19 @@ func (ws *weatherService) GetWeather(city string, country string) (models.Weathe
 	if city == "" || country == "" {
 		log.Print("Trying to make request with missing fields")
 		return models.WeatherData{}, fmt.Errorf("Trying to make request with missing fields")
+	}
+
+	cacheKey := city + country
+
+	cachedData, err := ws.cache.Get(context.TODO(), cacheKey)
+
+	if cachedData.Address != "" && cachedData.TimeZone != "" && err != redis.Nil {
+		return cachedData, nil
+	}
+
+	if err != redis.Nil {
+		log.Printf("Error during cached data fetch: %v", err)
+		return models.WeatherData{}, err
 	}
 
 	req, err := http.NewRequest("GET", url, nil)
@@ -63,6 +79,10 @@ func (ws *weatherService) GetWeather(city string, country string) (models.Weathe
 
 	if err = json.Unmarshal(body, &data); err != nil {
 		log.Printf("Problem with decoding data from response body: %v", err)
+		return models.WeatherData{}, err
+	}
+
+	if err = ws.cache.Set(context.TODO(), cacheKey, data, 12*time.Hour); err != nil {
 		return models.WeatherData{}, err
 	}
 

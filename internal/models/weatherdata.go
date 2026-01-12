@@ -1,9 +1,5 @@
 package models
 
-import (
-	"github.com/redis/go-redis/v9"
-)
-
 type WeatherData struct {
 	Address  string  `json:"address"`
 	TimeZone string  `json:"timezone"`
@@ -18,9 +14,7 @@ type WeatherData struct {
 		Sunrise    string  `json:"sunrise"`
 		Sunset     string  `json:"sunset"`
 	} `json:"days"`
-	Strations   map[string]Station `json:"stations"`
-	APIKey      string             `json:"-"`
-	RedisClient *redis.Client      `json:"-"`
+	Stations map[string]Station `json:"stations"`
 }
 
 type Station struct {
