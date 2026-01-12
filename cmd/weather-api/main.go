@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"os"
@@ -22,7 +23,14 @@ func main() {
 
 	rClient := redis.NewClient(&redis.Options{})
 
-	err := godotenv.Load()
+	_, err := rClient.Ping(context.TODO()).Result()
+	if err != nil {
+		log.Fatalf("failed to connect to Redis: %v", err)
+	}
+
+	defer rClient.Close()
+
+	err = godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}

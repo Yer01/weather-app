@@ -13,9 +13,9 @@ func (app *application) routes() *chi.Mux {
 
 	mux.Use(middleware.Logger)
 
-	mux.Use(httprate.Limit(10, 10*time.Second, httprate.WithKeyFuncs(httprate.KeyByIP, httprate.KeyByEndpoint)))
+	mux.Use(httprate.Limit(100, 10*time.Second, httprate.WithKeyFuncs(httprate.KeyByIP, httprate.KeyByEndpoint)))
 
-	mux.Get("/report", app.getSingle)
+	mux.Get("/report/{country}/{city}", app.getToday)
 
 	return mux
 }
