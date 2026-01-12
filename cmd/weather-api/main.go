@@ -1,59 +1,30 @@
 package main
 
 import (
-	"context"
 	"log"
 	"net/http"
 	"os"
 
-	"github.com/Yer01/weather-app/internal/models"
+	"github.com/Yer01/weather-app/internal/api/routes"
 	"github.com/joho/godotenv"
-	"github.com/redis/go-redis/v9"
 )
-
-type application struct {
-	redisClient *redis.Client
-	weatherdata *models.WeatherData
-	logger      *log.Logger
-}
 
 func main() {
 
-	logger := log.Default()
+	var err error
 
-	rClient := redis.NewClient(&redis.Options{})
-
-	_, err := rClient.Ping(context.TODO()).Result()
-	if err != nil {
-		log.Fatalf("failed to connect to Redis: %v", err)
-	}
-
-	defer rClient.Close()
-
-	err = godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
+	if err = godotenv.Load(); err != nil {
+		log.Fatalf("Couldnt load environmental variables: %v", err)
 	}
 
 	apikey := os.Getenv("API_KEY")
 
-	wd := &models.WeatherData{
-		APIKey:      apikey,
-		RedisClient: rClient,
-	}
+	router := routes.Routes(apikey)
 
-	app := &application{
-		redisClient: rClient,
-		weatherdata: wd,
-		logger:      logger,
-	}
+	log.Print("Starting server on port 8081...")
 
-	router := app.routes()
-	logger.Print("starting server over localhost:8081...")
-	if err := http.ListenAndServe("localhost:8081", router); err != nil {
-		logger.Fatal(err.Error())
+	if err = http.ListenAndServe("localhost:8081", router); err != nil {
+		log.Fatalf("Can't launch server on port 8081: %v", err)
 	}
-
 	os.Exit(0)
-
 }
