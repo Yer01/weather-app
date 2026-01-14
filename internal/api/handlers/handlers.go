@@ -26,7 +26,7 @@ func (h *Handler) GetToday(w http.ResponseWriter, r *http.Request) {
 	dayInput := r.FormValue("days")
 
 	if dayInput == "" {
-		dayInput = "6"
+		dayInput = "7"
 	}
 
 	days, err := strconv.Atoi(dayInput)
