@@ -11,7 +11,6 @@ import (
 
 	"github.com/Yer01/weather-app/internal/cache"
 	"github.com/Yer01/weather-app/internal/models"
-	"github.com/redis/go-redis/v9"
 )
 
 type Service interface {
@@ -42,11 +41,11 @@ func (ws *weatherService) GetWeather(city string, country string) (models.Weathe
 
 	cachedData, err := ws.cache.Get(context.TODO(), cacheKey)
 
-	if cachedData.Address != "" && cachedData.TimeZone != "" && err != redis.Nil {
+	if cachedData.Address != "" && cachedData.TimeZone != "" {
 		return cachedData, nil
 	}
 
-	if err != redis.Nil {
+	if err != nil {
 		log.Printf("Error during cached data fetch: %v", err)
 		return models.WeatherData{}, err
 	}

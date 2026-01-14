@@ -33,15 +33,23 @@ func (h *Handler) GetToday(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println("Problem with day num conversion to int")
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	data, err := h.service.GetWeather(city, country)
 	if err != nil {
+		log.Printf("Problem with fetching data service: %v", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+
+	if days <= 0 || days >= len(data.Days) {
+		log.Println("Days are out of range!")
+		http.Error(w, "Input days are out of range", http.StatusBadRequest)
+		return
+	}
 
 	data.Days = data.Days[:days]
 
