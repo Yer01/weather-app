@@ -23,10 +23,10 @@ func NewHandler(service services.Service) *Handler {
 func (h *Handler) GetToday(w http.ResponseWriter, r *http.Request) {
 	city := chi.URLParam(r, "city")
 	country := chi.URLParam(r, "country")
-	dayInput := r.PathValue("days")
+	dayInput := r.FormValue("days")
 
 	if dayInput == "" {
-		dayInput = "7"
+		dayInput = "6"
 	}
 
 	days, err := strconv.Atoi(dayInput)
