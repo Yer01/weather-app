@@ -1,22 +1,25 @@
 package routes
 
 import (
+	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/Yer01/weather-app/internal/api/handlers"
 	"github.com/Yer01/weather-app/internal/cache"
+	"github.com/Yer01/weather-app/internal/config"
 	"github.com/Yer01/weather-app/internal/services"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/httprate"
 )
 
-func Routes(key string) *chi.Mux {
+func Routes(cfg config.Config) error {
 	mux := chi.NewRouter()
 
 	weatherCache := cache.NewCache()
 
-	weatherService := services.NewService(key, weatherCache)
+	weatherService := services.NewService(cfg.APIkey, weatherCache)
 
 	weatherHandler := handlers.NewHandler(weatherService)
 
@@ -26,5 +29,7 @@ func Routes(key string) *chi.Mux {
 
 	mux.Get("/report/{country}/{city}", weatherHandler.GetToday)
 
-	return mux
+	err := http.ListenAndServe(fmt.Sprintf("localhost:%s", cfg.ServerPort), mux)
+
+	return err
 }

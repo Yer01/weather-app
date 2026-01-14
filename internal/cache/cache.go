@@ -47,7 +47,7 @@ func (r *redisCache) Get(ctx context.Context, key string) (models.WeatherData, e
 	data, err := r.cache.Get(ctx, key).Result()
 
 	if err != nil {
-		log.Printf("Error with fetching cached data: %v", err)
+		log.Print("Cache Miss!")
 		return models.WeatherData{}, err
 	}
 
