@@ -37,7 +37,7 @@ func main() {
 
 	weatherHandler := handlers.NewHandler(weatherService)
 
-	router := routes.Routes(*weatherHandler)
+	router := routes.Routes(weatherHandler)
 
 	if err = http.ListenAndServe(fmt.Sprintf("localhost:%s", cfg.ServerPort), router); err != nil {
 		log.Fatalf("Can't launch server on port 8081: %v", err)

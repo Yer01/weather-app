@@ -9,7 +9,7 @@ import (
 	"github.com/go-chi/httprate"
 )
 
-func Routes(weatherHandler handlers.Handler) *chi.Mux {
+func Routes(weatherHandler *handlers.Handler) *chi.Mux {
 	mux := chi.NewRouter()
 
 	mux.Use(middleware.Logger)
